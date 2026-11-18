@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>むらさきアイドル☆ライブチャレンジ</title>
+<style>
+:root{--purple:#8b5cf6;--deep:#5526a8;--pink:#ff77bd;--ink:#302447;--cream:#fff9ff}
+*{box-sizing:border-box} body{margin:0;background:linear-gradient(145deg,#24113f,#6c3aa6 55%,#f08bc4);font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;color:var(--ink);min-height:100vh}
+#app{max-width:520px;margin:auto;min-height:100vh;background:var(--cream);box-shadow:0 0 35px #170b2c88;position:relative;overflow:hidden}
+header{padding:16px 18px;background:linear-gradient(100deg,#6c35b5,#a66cf0);color:white;text-align:center}
+header h1{font-size:20px;margin:0 0 4px}header p{margin:0;font-size:12px;opacity:.9}
+main{padding:16px}
+.panel{background:white;border:2px solid #eadcff;border-radius:18px;padding:14px;margin-bottom:13px;box-shadow:0 5px 0 #eadcff}
+h2{font-size:18px;margin:0 0 8px;color:var(--deep)}p{line-height:1.55}
+button{border:0;border-radius:14px;padding:13px 16px;font-weight:800;font-size:15px;background:linear-gradient(100deg,#8c54e8,#c16be8);color:white;box-shadow:0 4px 0 #6135a4;cursor:pointer}
+button:active{transform:translateY(3px);box-shadow:0 1px 0 #6135a4}
+button:disabled{opacity:.45;cursor:not-allowed}
+.primary{width:100%;margin-top:8px}.small{font-size:12px;padding:8px 11px}
+.row{display:flex;justify-content:space-between;gap:8px;align-items:center}.stat{font-weight:800;color:#6738a9}
+#stage{display:none}
+#scene{height:270px;border-radius:18px;position:relative;overflow:hidden;background:linear-gradient(#24123f 0 45%,#573087 45% 70%,#21152e 70%);border:3px solid #d8bafa}
+.spot{position:absolute;top:-55px;width:170px;height:290px;background:#fff5bf55;clip-path:polygon(40% 0,60% 0,100% 100%,0 100%);filter:blur(3px)}
+.spot.one{left:4%}.spot.two{right:4%}
+.crowd{position:absolute;bottom:0;height:90px;width:100%;background:repeating-linear-gradient(90deg,#171324 0 18px,#30213e 18px 36px);opacity:.95}
+.person{position:absolute;bottom:56px;width:68px;height:125px;text-align:center;font-size:10px;color:white;z-index:2}
+.person .head{width:34px;height:34px;border-radius:50%;background:#ffd5c4;margin:auto;border:3px solid #fff}
+.person .body{width:54px;height:72px;margin:-1px auto;background:#b9a0e9;border-radius:17px 17px 7px 7px}
+.person.target{left:calc(50% - 34px);z-index:3}.target .body{background:#a76be8}
+.person.other{left:10%;transform:scale(.9)}.person.other2{right:10%;transform:scale(.95)}
+.person .label{background:#25133caa;border-radius:8px;padding:2px}
+.obstacle{position:absolute;bottom:25px;width:47px;height:102px;background:#24202c;border-radius:22px 22px 5px 5px;z-index:5;opacity:.95}
+.obstacle:before{content:"";position:absolute;top:-24px;left:7px;width:33px;height:33px;border-radius:50%;background:#c88e75}
+#obstacle{left:-60px;transition:left .25s}
+#flash{position:absolute;inset:0;background:white;opacity:0;pointer-events:none;z-index:8}
+#flash.on{animation:flash .25s}@keyframes flash{0%{opacity:.9}100%{opacity:0}}
+.hud{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin:10px 0}
+.hud div{background:#f3eaff;border-radius:12px;padding:8px;text-align:center;font-size:12px}.hud b{display:block;font-size:18px;color:#6532a8}
+.actions{display:flex;gap:8px}.actions button{flex:1}
+.bar{height:13px;border-radius:20px;background:#eee;overflow:hidden;margin-top:5px}.fill{height:100%;width:0;background:linear-gradient(90deg,#a36af0,#ff79bd);transition:width .2s}
+#talkScene{height:260px;border-radius:18px;background:linear-gradient(150deg,#ffe1f2,#eadbff);display:flex;align-items:center;justify-content:center;position:relative;border:3px solid #e5c9ff}
+.chara{width:145px;text-align:center;position:relative}
+.chara .face{width:82px;height:82px;background:#ffd8c8;border:5px solid #fff;border-radius:50%;margin:auto;position:relative}
+.chara .hair{position:absolute;top:-8px;left:7px;width:60px;height:32px;background:#39233f;border-radius:50% 50% 20% 20%}
+.chara .eyes:before,.chara .eyes:after{content:"";position:absolute;top:40px;width:6px;height:8px;background:#38243b;border-radius:50%}
+.chara .eyes:before{left:27px}.chara .eyes:after{right:27px}
+.chara .smile{position:absolute;top:52px;left:35px;width:14px;height:7px;border-bottom:2px solid #bd567d;border-radius:50%}
+.chara .torso{width:105px;height:105px;background:#a56be8;margin:-2px auto 0;border-radius:22px 22px 10px 10px;border-bottom:13px solid #6c3bb0}
+.chara .ribbon{position:absolute;top:90px;left:55px;color:#fff;font-size:24px}
+.speech{position:absolute;top:12px;left:12px;right:12px;background:#ffffffdf;padding:8px;border-radius:12px;font-size:13px;text-align:center}
+#result{display:none;text-align:center}
+.bigscore{font-size:38px;font-weight:900;color:#783fc0}
+.muted{font-size:12px;color:#786b87}
+#toast{min-height:22px;text-align:center;font-size:13px;font-weight:700;color:#7535ae;margin:6px}
+footer{text-align:center;padding:8px 14px 18px;font-size:11px;color:#8b7b9b}
+</style>
+</head>
+<body><div id="app">
+<header><h1>💜 むらさきアイドル☆ライブチャレンジ</h1><p>ライブ撮影＆特典会の2ステージに挑戦！</p></header>
+<main>
+<section id="intro">
+<div class="panel"><h2>遊び方</h2>
+<p><b>STAGE 1：ライブ撮影（120秒）</b><br>紫担当のアイドル「ゆかり」を狙ってシャッター！メンバーや観客に視界を遮られない瞬間を狙おう。ピントと構図が良いほど高得点。</p>
+<p><b>STAGE 2：特典会（60秒）</b><br>チェキにサインしている間、会話の流れに合わせて「お腹つんつん」や「あむあむポーズ」をお願いしよう。本人がOKしたチャレンジだけ実行できるよ。スタッフの見回りにも注意！</p>
+<p class="muted">※登場人物はすべて架空の成人キャラクターです。特典会のアクションは本人の同意がある演出として描かれます。</p>
+<button class="primary" onclick="startGame()">ゲームスタート！</button></div>
+</section>
+<section id="stage">
+<div class="row"><b id="stageTitle">STAGE 1：ライブ撮影</b><span class="stat" id="stageNo">1 / 2</span></div>
+<div class="hud"><div>残り時間<b id="time">120</b></div><div>スコア<b id="score">0</b></div><div>コンボ<b id="combo">0</b></div></div>
+<div id="live">
+<div id="scene"><div class="spot one"></div><div class="spot two"></div>
+<div class="person other"><div class="head"></div><div class="body"></div><span class="label">青担当</span></div>
+<div class="person target"><div class="head"></div><div class="body"></div><span class="label">💜 ゆかり</span></div>
+<div class="person other2"><div class="head"></div><div class="body"></div><span class="label">桃担当</span></div>
+<div class="crowd"></div><div class="obstacle" id="obstacle"></div><div id="flash"></div></div>
+<div class="hud"><div>ピント<b id="focus">良好</b></div><div>視界<b id="view">クリア</b></div><div>ベスト<b id="best">0</b></div></div>
+<div class="actions"><button onclick="shoot()">📸 撮影する！</button><button class="small" onclick="focusShot()">🎯 ピント調整</button></div>
+</div>
+<div id="benefit" style="display:none">
+<div id="talkScene"><div class="speech" id="speech">「チェキにサインするね！今日は来てくれてありがとう💜」</div><div class="chara"><div class="face"><div class="hair"></div><div class="eyes"></div><div class="smile"></div></div><div class="torso"></div><div class="ribbon">🎀</div></div></div>
+<div style="margin:10px 0"><div class="row"><b>警戒メーター</b><b id="alertNum">0%</b></div><div class="bar"><div class="fill" id="alertBar"></div></div></div>
+<div class="row"><span class="muted">スタッフの見回りに注意！</span><b id="staff">スタッフ：不在</b></div>
+<div class="actions" style="margin-top:12px"><button onclick="challenge('poke')">👉 つんつんポーズ<br><small>＋10〜20 pt</small></button><button onclick="challenge('nom')">😋 あむあむポーズ<br><small>＋25〜40 pt</small></button></div>
+</div>
+<div id="toast"></div>
+</section>
+<section id="result" class="panel">
+<h2>🎉 チャレンジ終了！</h2><div class="bigscore" id="finalScore">0 pt</div><p id="rank"></p><p id="resultText"></p>
+<button class="primary" onclick="location.reload()">もう一度プレイ</button>
+</section>
+</main><footer>ゆかりと過ごす、きらきらライブ＆特典会 💜</footer></div>
+<script>
+let stage=1,score=0,time=120,combo=0,timer=null,obTimer=null,blocked=false,focus=1,alert=0,staff=false,staffTimer=null,benefitCount=0;
+const $=id=>document.getElementById(id);
+function update(){ $('score').textContent=score;$('time').textContent=time;$('combo').textContent=combo;$('alertNum').textContent=alert+'%';$('alertBar').style.width=alert+'%';}
+function startGame(){ $('intro').style.display='none';$('stage').style.display='block';startLive();}
+function startClock(){clearInterval(timer);timer=setInterval(()=>{time--;update();if(time<=0){clearInterval(timer);if(stage===1)startBenefit();else finish();}},1000);}
+function startLive(){stage=1;time=120;score=0;combo=0;$('stageTitle').textContent='STAGE 1：ライブ撮影';$('stageNo').textContent='1 / 2';$('live').style.display='block';$('benefit').style.display='none';$('toast').textContent='視界が開けた瞬間を狙って撮影しよう！';update();startClock();obTimer=setInterval(()=>{blocked=Math.random()<.55;$('obstacle').style.left=blocked?(Math.random()*65+18)+'%':'-60px';$('view').textContent=blocked?'遮られている！':'クリア';},1100);}
+function focusShot(){focus=1.5;$('focus').textContent='集中！';$('toast').textContent='ピントを合わせた！次の撮影が高得点';setTimeout(()=>{focus=1;$('focus').textContent='良好';},3500);}
+function shoot(){if(stage!==1)return;let base=blocked?3:Math.floor(Math.random()*13+12);let quality=Math.random();if(quality<.18)base=Math.floor(base*.5);else if(quality>.78)base+=8;let pts=Math.round(base*focus);score+=pts;combo=pts>=15?combo+1:0;if(combo>0&&combo%5===0)score+=10;$('flash').classList.remove('on');void $('flash').offsetWidth;$('flash').classList.add('on');$('toast').textContent=blocked?'人影がかぶった… '+pts+' pt':'いいショット！ +'+pts+' pt'+(combo>=5?' コンボボーナス！':'');update();}
+function startBenefit(){clearInterval(obTimer);stage=2;time=60;alert=0;staff=false;combo=0;$('stageTitle').textContent='STAGE 2：特典会';$('stageNo').textContent='2 / 2';$('live').style.display='none';$('benefit').style.display='block';$('speech').textContent='「チェキにサインするね！今日は来てくれてありがとう💜」';$('toast').textContent='本人のOKが出たチャレンジに挑戦しよう！';update();staffTimer=setInterval(()=>{staff=Math.random()<.45;$('staff').textContent=staff?'スタッフ：巡回中 👀':'スタッフ：不在';},2400);startClock();}
+function challenge(kind){if(stage!==2)return;let risk=kind==='nom'?27:12;let gain=kind==='nom'?Math.floor(Math.random()*16+25):Math.floor(Math.random()*11+10);let caught=staff&&Math.random()<(kind==='nom'?.7:.35);if(caught){alert+=risk+12;$('toast').textContent='スタッフに見られた！警戒度が大きく上がった…';}else{alert+=risk;$('toast').textContent=(kind==='nom'?'あむあむポーズ成功！':'つんつんポーズ成功！')+' +'+gain+' pt';score+=gain;combo++;$('speech').textContent=kind==='nom'?'「あむあむポーズ、面白いね！はい、チーズ💜」':'「つんつんポーズだね！かわいく撮れたかな？💜」';}alert=Math.min(100,alert);update();if(alert>=100){clearInterval(timer);finish(true);}}
+function finish(gameover=false){clearInterval(timer);clearInterval(staffTimer);clearInterval(obTimer);$('stage').style.display='none';$('result').style.display='block';$('finalScore').textContent=score+' pt';$('rank').textContent=gameover?'🚫 GAME OVER：警戒メーターMAX！':'🏆 '+(score>=1800?'ライブマスター！':score>=1000?'トップオタ級！':score>=500?'ナイスチャレンジ！':'おつかれさま！');$('resultText').textContent=gameover?'警戒されてしまった…。次はタイミングを見極めよう！':'ライブ撮影から特典会まで完走！ゆかりとの思い出をスコアに残したよ。';}
+</script></body></html>
